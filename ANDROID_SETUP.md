@@ -1,6 +1,6 @@
 # Android App Setup Guide
 
-This guide will help you build and run the Physio Platform Android app.
+Complete guide for building and running the Physio Platform Android mobile app.
 
 ## Prerequisites
 
@@ -17,27 +17,21 @@ This guide will help you build and run the Physio Platform Android app.
 Navigate to the frontend directory and install all dependencies:
 
 ```bash
-cd Physio_Coaching_AppV1_POC/frontend
+cd frontend
 npm install
 ```
 
-### 2. Build the Web App
+### 2. Build the App
 
-Build the React app for production:
+Build the React app for production (this creates the files Android needs):
 
 ```bash
 npm run build
 ```
 
-### 3. Initialize Capacitor (if not already done)
+### 3. Sync to Android
 
-```bash
-npx cap add android
-```
-
-### 4. Sync Capacitor
-
-Sync the web build with the Android project:
+Sync the built app with the Android project:
 
 ```bash
 npm run android:sync
@@ -49,7 +43,7 @@ Or manually:
 npx cap sync android
 ```
 
-### 5. Open in Android Studio
+### 4. Open in Android Studio
 
 ```bash
 npm run android:open
@@ -61,30 +55,27 @@ Or manually:
 npx cap open android
 ```
 
-### 6. Build and Run
+### 5. Setup Android Studio
 
-#### Option A: Using Android Studio
-1. Open the project in Android Studio
-2. Wait for Gradle sync to complete
-3. Connect an Android device or start an emulator
-4. Click "Run" button or press `Shift+F10`
+1. Wait for Gradle sync to complete
+2. If prompted, install missing SDK components
+3. Create an Android Virtual Device (AVD) if testing on emulator:
+   - Tools → Device Manager → Create Device
+   - Select a device (e.g., Pixel 5)
+   - Select a system image (API 30+ recommended)
+   - Finish setup
 
-#### Option B: Using Command Line
+### 6. Run the App
+
+**Option A: Using Android Studio**
+1. Click the green "Run" button
+2. Select your device/emulator
+3. Wait for app to install and launch
+
+**Option B: Using Command Line**
 
 ```bash
-# Build and sync
-npm run android:build
-
-# Run on connected device
 npm run android:run
-```
-
-Or using Gradle directly:
-
-```bash
-cd android
-./gradlew assembleDebug
-./gradlew installDebug
 ```
 
 ## Building Release APK/AAB
@@ -142,14 +133,14 @@ The AAB will be at: `android/app/build/outputs/bundle/release/app-release.aab`
 
 ### API URL Configuration
 
-Update the API URL in `src/context/SessionContext.jsx`:
+Update the API URL in `frontend/src/context/SessionContext.jsx`:
 
 ```javascript
 const API_URL = import.meta.env.VITE_API_URL || 'http://your-backend-url:8000';
 const WS_URL = import.meta.env.VITE_WS_URL || 'ws://your-backend-url:8000';
 ```
 
-Or create a `.env` file:
+Or create a `.env` file in `frontend/`:
 
 ```env
 VITE_API_URL=http://your-backend-url:8000
@@ -158,7 +149,7 @@ VITE_WS_URL=ws://your-backend-url:8000
 
 ### App Configuration
 
-Edit `capacitor.config.ts` to customize:
+Edit `frontend/capacitor.config.ts` to customize:
 - App ID (`appId`)
 - App Name (`appName`)
 - Splash screen settings
@@ -201,16 +192,15 @@ These are already configured in `AndroidManifest.xml`.
 ## Development Workflow
 
 1. Make changes to React code in `frontend/src/`
-2. Test in browser: `npm run dev`
-3. Build: `npm run build`
-4. Sync: `npm run android:sync`
-5. Test in Android Studio or on device
+2. Build: `npm run build`
+3. Sync: `npm run android:sync`
+4. Test in Android Studio or on device
 
 ## Project Structure
 
 ```
 Physio_Coaching_AppV1_POC/
-├── frontend/              # React web app
+├── frontend/              # React source code
 │   ├── src/              # Source code
 │   ├── dist/             # Built web app (generated)
 │   └── capacitor.config.ts
@@ -226,12 +216,8 @@ Physio_Coaching_AppV1_POC/
 ## Useful Commands
 
 ```bash
-# Development
-npm run dev                    # Start dev server
+# Build
 npm run build                  # Build web app
-npm run preview                # Preview built app
-
-# Android
 npm run android:sync          # Sync web build to Android
 npm run android:open          # Open in Android Studio
 npm run android:build         # Build and sync
@@ -272,4 +258,3 @@ For issues or questions:
 - Check Capacitor documentation: https://capacitorjs.com/docs
 - Check Android Studio logs
 - Check device logs: `adb logcat`
-
