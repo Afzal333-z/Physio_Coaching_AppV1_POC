@@ -366,16 +366,16 @@ class _JoinSessionScreenState extends State<JoinSessionScreen>
 
                   const SizedBox(height: AppTheme.spacingXl),
 
-                  // Info card with animation
+                  // Testing mode banner
                   StaggeredListAnimation(
                     index: 6,
                     child: Container(
                       padding: const EdgeInsets.all(AppTheme.spacingL),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.orange.shade50,
                         borderRadius: BorderRadius.circular(AppTheme.radiusL),
                         border: Border.all(
-                          color: AppTheme.successGreen.withOpacity(0.2),
+                          color: Colors.orange.shade400,
                           width: 2,
                         ),
                       ),
@@ -385,12 +385,12 @@ class _JoinSessionScreenState extends State<JoinSessionScreen>
                           Container(
                             padding: const EdgeInsets.all(AppTheme.spacingS),
                             decoration: BoxDecoration(
-                              color: AppTheme.successGreen.withOpacity(0.1),
+                              color: Colors.orange.shade100,
                               borderRadius: BorderRadius.circular(AppTheme.radiusM),
                             ),
-                            child: const Icon(
-                              Icons.info_outline_rounded,
-                              color: AppTheme.successGreen,
+                            child: Icon(
+                              Icons.science_outlined,
+                              color: Colors.orange.shade700,
                               size: 28,
                             ),
                           ),
@@ -400,18 +400,19 @@ class _JoinSessionScreenState extends State<JoinSessionScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Need Help?',
+                                  '🧪 Testing Mode Active',
                                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                         fontWeight: FontWeight.bold,
-                                        color: AppTheme.textPrimary,
+                                        color: Colors.orange.shade900,
                                       ),
                                 ),
                                 const SizedBox(height: AppTheme.spacingS),
                                 Text(
-                                  'Get the session code from your therapist before joining. The code is 6 characters long.',
+                                  'You can enter ANY code and join successfully. No backend validation required for testing!',
                                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        color: AppTheme.textSecondary,
+                                        color: Colors.orange.shade900,
                                         height: 1.6,
+                                        fontWeight: FontWeight.w500,
                                       ),
                                 ),
                               ],

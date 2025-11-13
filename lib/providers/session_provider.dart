@@ -108,20 +108,25 @@ class SessionProvider extends ChangeNotifier {
   }
 
   Future<Map<String, dynamic>> joinSession(String code, String patientName) async {
-    // HARDCODED MOCK IMPLEMENTATION FOR JOINING ANY SESSION CODE (ALWAYS SUCCEEDS)
-    // The code is used purely for sessionCode, but is not validated.
-    _sessionCode = code.toUpperCase().padRight(6, 'X').substring(0, 6); // Take any input, pad/truncate to 6 chars
-    _userId = 'mock_patient_id'; // Provide a dummy ID
+    // ============================================================================
+    // TESTING MODE: ACCEPTS ANY SESSION CODE WITHOUT VALIDATION
+    // For testing purposes - patient can enter ANY code and join successfully
+    // No backend validation, no session checking - pure local testing mode
+    // ============================================================================
+    _sessionCode = code.toUpperCase().padRight(6, 'X').substring(0, 6); // Accept any input, format to 6 chars
+    _userId = 'test_patient_${DateTime.now().millisecondsSinceEpoch}'; // Unique test ID
     _userRole = 'patient';
     _userName = patientName;
     _isInSession = true;
-    _isConnected = true; // Assume connected for mock purposes
-    _selectedExercise = 'HAND_STRETCH'; // Set to hand stretching exercise
+    _isConnected = true; // Mock connection for testing
+    _selectedExercise = 'HAND_STRETCH'; // Default exercise
 
+    // WebSocket disabled for local testing (no backend required)
     // _webSocketService.connect(_sessionCode, _userId);
 
     notifyListeners();
-    return {'success': true};
+    print('✅ TEST MODE: Patient "$patientName" joined with code: $_sessionCode');
+    return {'success': true, 'message': 'Joined in test mode - any code accepted'};
   }
 
   void sendFeedback(String patientId, String message) {
