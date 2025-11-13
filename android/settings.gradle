@@ -1,19 +1,27 @@
-include ':app'
-include ':capacitor-android'
-project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/android/capacitor')
+pluginManagement {
+    def flutterSdkPath = {
+        def properties = new Properties()
+        file("local.properties").withInputStream { properties.load(it) }
+        def flutterSdkPath = properties.getProperty("flutter.sdk")
+        assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
+        return flutterSdkPath
+    }
+    settings.ext.flutterSdkPath = flutterSdkPath()
 
-include ':capacitor-app'
-project(':capacitor-app').projectDir = new File('../node_modules/@capacitor/app/android')
+    includeBuild("${settings.ext.flutterSdkPath}/packages/flutter_tools/gradle")
 
-include ':capacitor-camera'
-project(':capacitor-camera').projectDir = new File('../node_modules/@capacitor/camera/android')
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
 
-include ':capacitor-network'
-project(':capacitor-network').projectDir = new File('../node_modules/@capacitor/network/android')
+plugins {
+    id "dev.flutter.flutter-plugin-loader" version "1.0.0"
+    id "com.android.application" version "8.2.1" apply false
+    id "org.jetbrains.kotlin.android" version "1.9.0" apply false
+}
 
-include ':capacitor-status-bar'
-project(':capacitor-status-bar').projectDir = new File('../node_modules/@capacitor/status-bar/android')
-
-include ':capacitor-splash-screen'
-project(':capacitor-splash-screen').projectDir = new File('../node_modules/@capacitor/splash-screen/android')
+include ":app"
 
