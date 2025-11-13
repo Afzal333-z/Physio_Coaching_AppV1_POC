@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/session_provider.dart';
 import 'screens/landing_screen.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   runApp(const PhysioPlatformApp());
@@ -17,14 +18,8 @@ class PhysioPlatformApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Physio Platform',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.blue,
-            brightness: Brightness.light,
-          ),
-        ),
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
         home: const LandingScreen(),
       ),
     );
