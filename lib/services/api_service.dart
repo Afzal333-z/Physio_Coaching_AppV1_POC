@@ -6,6 +6,20 @@ class ApiService {
   static const String baseUrl = 'http://10.0.2.2:8000';
   
   static Future<Map<String, dynamic>> createSession(String therapistName) async {
+    // MOCK IMPLEMENTATION FOR TESTING WITHOUT BACKEND
+    // This bypasses the actual network request and returns a dummy session code immediately.
+    await Future.delayed(const Duration(milliseconds: 100)); // Simulate a small delay
+    return {
+      'success': true,
+      'data': {
+        'session_code': 'TEST123',
+        'therapist_name': therapistName,
+      },
+    };
+    // END MOCK IMPLEMENTATION
+
+    // Original implementation (uncomment when backend is available):
+    /*
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/api/sessions/create'),
@@ -30,6 +44,7 @@ class ApiService {
         'error': e.toString(),
       };
     }
+    */
   }
 
   static Future<Map<String, dynamic>> joinSession(String sessionCode, String patientName) async {
@@ -109,4 +124,3 @@ class ApiService {
     }
   }
 }
-

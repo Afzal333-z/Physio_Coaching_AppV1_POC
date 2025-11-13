@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import '../models/session_model.dart';
 import '../services/api_service.dart';
 import '../services/websocket_service.dart';
-import '../utils/exercise_validation.dart';
+// import '../utils/exercise_validation.dart'; // Removed unused import
 
 class SessionProvider extends ChangeNotifier {
   // Session state
@@ -91,45 +91,37 @@ class SessionProvider extends ChangeNotifier {
   }
 
   Future<Map<String, dynamic>> createSession(String therapistName) async {
-    final result = await ApiService.createSession(therapistName);
-    
-    if (result['success'] == true) {
-      final data = result['data'] as Map<String, dynamic>;
-      _sessionCode = data['session_code'] as String;
-      _userId = data['therapist_id'] as String;
-      _userRole = 'therapist';
-      _userName = therapistName;
-      _isInSession = true;
-      
-      _webSocketService.connect(_sessionCode, _userId);
-      _isConnected = true;
-      
-      notifyListeners();
-      return {'success': true, 'sessionCode': _sessionCode};
-    } else {
-      return {'success': false, 'error': result['error']};
-    }
+    // HARDCODED MOCK IMPLEMENTATION FOR IMMEDIATE TESTING WITHOUT BACKEND
+    _sessionCode = 'THERAP'; // 6-character code
+    _userId = 'mock_therapist_id'; // Provide a dummy ID
+    _userRole = 'therapist';
+    _userName = therapistName;
+    _isInSession = true;
+    _isConnected = true; // Assume connected for mock purposes
+    _selectedExercise = 'HAND_STRETCH'; // Set default exercise for therapist too
+
+    // You might want to remove or mock WebSocketService.connect for a full backend bypass if it causes errors without a real server
+    // _webSocketService.connect(_sessionCode, _userId);
+
+    notifyListeners();
+    return {'success': true, 'sessionCode': _sessionCode};
   }
 
   Future<Map<String, dynamic>> joinSession(String code, String patientName) async {
-    final result = await ApiService.joinSession(code.toUpperCase(), patientName);
-    
-    if (result['success'] == true) {
-      final data = result['data'] as Map<String, dynamic>;
-      _sessionCode = data['session_code'] as String;
-      _userId = data['patient_id'] as String;
-      _userRole = 'patient';
-      _userName = patientName;
-      _isInSession = true;
-      
-      _webSocketService.connect(_sessionCode, _userId);
-      _isConnected = true;
-      
-      notifyListeners();
-      return {'success': true};
-    } else {
-      return {'success': false, 'error': result['error']};
-    }
+    // HARDCODED MOCK IMPLEMENTATION FOR JOINING ANY SESSION CODE (ALWAYS SUCCEEDS)
+    // The code is used purely for sessionCode, but is not validated.
+    _sessionCode = code.toUpperCase().padRight(6, 'X').substring(0, 6); // Take any input, pad/truncate to 6 chars
+    _userId = 'mock_patient_id'; // Provide a dummy ID
+    _userRole = 'patient';
+    _userName = patientName;
+    _isInSession = true;
+    _isConnected = true; // Assume connected for mock purposes
+    _selectedExercise = 'HAND_STRETCH'; // Set to hand stretching exercise
+
+    // _webSocketService.connect(_sessionCode, _userId);
+
+    notifyListeners();
+    return {'success': true};
   }
 
   void sendFeedback(String patientId, String message) {
@@ -200,10 +192,9 @@ class SessionProvider extends ChangeNotifier {
   }
 
   Future<void> endSession() async {
-    final result = await ApiService.endSession(_sessionCode);
-    if (result['success'] == true) {
-      handleSessionEnd(result['data'] as Map<String, dynamic>);
-    }
+    // MOCK IMPLEMENTATION FOR END SESSION
+    print('Mock session ended for: $_sessionCode');
+    handleSessionEnd({'message': 'Mock session ended successfully'});
   }
 
   void handleSessionEnd(Map<String, dynamic> report) {
@@ -244,4 +235,3 @@ class SessionProvider extends ChangeNotifier {
     super.dispose();
   }
 }
-

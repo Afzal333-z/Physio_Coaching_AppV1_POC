@@ -3,7 +3,7 @@ class Exercise {
   final String description;
   final Map<String, double> targetAngles;
 
-  Exercise({
+  const Exercise({
     required this.name,
     required this.description,
     required this.targetAngles,
@@ -15,7 +15,7 @@ class ExerciseValidation {
   final Map<String, String> jointStatus;
   final List<String> errors;
 
-  ExerciseValidation({
+  const ExerciseValidation({
     required this.accuracy,
     required this.jointStatus,
     required this.errors,
@@ -24,28 +24,36 @@ class ExerciseValidation {
 
 class ExerciseUtils {
   static const Map<String, Exercise> exercises = {
-    'SQUAT': Exercise(
+    'SQUAT': const Exercise(
       name: 'Squat',
       description: 'Lower body exercise',
-      targetAngles: {
+      targetAngles: const {
         'leftKnee': 90.0,
         'rightKnee': 90.0,
       },
     ),
-    'LUNGE': Exercise(
+    'LUNGE': const Exercise(
       name: 'Lunge',
       description: 'Single leg exercise',
-      targetAngles: {
+      targetAngles: const {
         'leftKnee': 90.0,
         'rightKnee': 90.0,
       },
     ),
-    'PLANK': Exercise(
+    'PLANK': const Exercise(
       name: 'Plank',
       description: 'Core strength exercise',
-      targetAngles: {
+      targetAngles: const {
         'leftShoulder': 180.0,
         'rightShoulder': 180.0,
+      },
+    ),
+    'HAND_STRETCH': const Exercise(
+      name: 'Hand Stretch',
+      description: 'Stretch your fingers and wrist.',
+      targetAngles: const {
+        'leftWrist': 90.0,
+        'rightWrist': 90.0,
       },
     ),
   };
@@ -99,7 +107,9 @@ class ExerciseUtils {
       'rightElbow': 90.0,
       'leftShoulder': 180.0,
       'rightShoulder': 180.0,
+      // Added mock wrist angles for hand stretch
+      'leftWrist': 90.0,
+      'rightWrist': 90.0,
     };
   }
 }
-

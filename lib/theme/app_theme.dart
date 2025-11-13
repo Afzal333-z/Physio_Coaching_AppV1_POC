@@ -204,7 +204,7 @@ class AppTheme {
       ),
 
       // Card theme - Elevated and rounded
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 3,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
@@ -264,7 +264,7 @@ class AppTheme {
       ),
 
       // Dialog theme
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
         ),
@@ -384,7 +384,7 @@ class AppTheme {
         ),
       ),
 
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 4,
         color: surfaceDark,
         shape: RoundedRectangleBorder(
