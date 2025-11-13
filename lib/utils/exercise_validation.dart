@@ -3,7 +3,7 @@ class Exercise {
   final String description;
   final Map<String, double> targetAngles;
 
-  Exercise({
+  const Exercise({
     required this.name,
     required this.description,
     required this.targetAngles,
@@ -27,7 +27,7 @@ class ExerciseUtils {
     'SQUAT': Exercise(
       name: 'Squat',
       description: 'Lower body exercise',
-      targetAngles: {
+      targetAngles: const {
         'leftKnee': 90.0,
         'rightKnee': 90.0,
       },
@@ -35,7 +35,7 @@ class ExerciseUtils {
     'LUNGE': Exercise(
       name: 'Lunge',
       description: 'Single leg exercise',
-      targetAngles: {
+      targetAngles: const {
         'leftKnee': 90.0,
         'rightKnee': 90.0,
       },
@@ -43,7 +43,7 @@ class ExerciseUtils {
     'PLANK': Exercise(
       name: 'Plank',
       description: 'Core strength exercise',
-      targetAngles: {
+      targetAngles: const {
         'leftShoulder': 180.0,
         'rightShoulder': 180.0,
       },
