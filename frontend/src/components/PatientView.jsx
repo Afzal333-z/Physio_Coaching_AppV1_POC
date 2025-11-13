@@ -7,6 +7,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useSession } from '../context/SessionContext';
 import { initializePose, startPoseDetection, stopPoseDetection, drawPoseSkeleton, drawAngleAnnotations, processPoseResults } from '../services/poseDetection';
 import { validateExercise, EXERCISES } from '../utils/exerciseValidation';
+import { requestCameraPermissions, isNativePlatform } from '../utils/mobileUtils';
 
 export default function PatientView() {
   const { 
@@ -39,10 +40,27 @@ export default function PatientView() {
 
   const initializeCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { width: 640, height: 480 },
-        audio: false 
-      });
+      // Request camera permissions on mobile
+      if (isNativePlatform()) {
+        const hasPermission = await requestCameraPermissions();
+        if (!hasPermission) {
+          alert('Camera permission is required for pose detection. Please enable it in Settings.');
+          setIsVideoEnabled(false);
+          return;
+        }
+      }
+
+      // Get camera stream with mobile-optimized settings
+      const constraints = {
+        video: {
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+          facingMode: 'user' // Front camera for self-view
+        },
+        audio: false
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -52,7 +70,8 @@ export default function PatientView() {
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
-      alert('Unable to access camera. Please grant camera permissions.');
+      alert('Unable to access camera. Please grant camera permissions in Settings.');
+      setIsVideoEnabled(false);
     }
   };
 
