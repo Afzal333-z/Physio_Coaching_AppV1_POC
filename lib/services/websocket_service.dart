@@ -10,7 +10,8 @@ class WebSocketService {
   Stream<Map<String, dynamic>>? get messageStream => _messageStream;
 
   void connect(String sessionCode, String userId) {
-    final wsUrl = 'ws://localhost:8000/ws/$sessionCode/$userId';
+    // Use 10.0.2.2 for Android emulator to access host machine's localhost
+    final wsUrl = 'ws://10.0.2.2:8000/ws/$sessionCode/$userId';
     
     try {
       _channel = WebSocketChannel.connect(Uri.parse(wsUrl));
