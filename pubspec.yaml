@@ -20,7 +20,10 @@ dependencies:
   # Camera & Media
   camera: ^0.10.5+5
   permission_handler: ^11.1.0
-  
+
+  # AI/ML - Pose Detection
+  google_mlkit_pose_detection: ^0.12.0
+
   # UI
   cupertino_icons: ^1.0.6
   

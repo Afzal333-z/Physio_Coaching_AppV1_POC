@@ -7,6 +7,7 @@ import 'create_session_screen.dart';
 import 'join_session_screen.dart';
 import 'patient_view_screen.dart';
 import 'therapist_dashboard_screen.dart';
+import 'camera_test_screen.dart';
 
 class LandingScreen extends StatelessWidget {
   const LandingScreen({super.key});
@@ -256,11 +257,32 @@ class _LandingContentState extends State<LandingContent>
                       },
                     ),
 
-                    const SizedBox(height: AppTheme.spacingXxl + AppTheme.spacingL),
+                    const SizedBox(height: AppTheme.spacingL),
+
+                    // Debug: Camera Test Button
+                    StaggeredListAnimation(
+                      index: 4,
+                      child: TextButton.icon(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const CameraTestScreen(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.bug_report, size: 16),
+                        label: const Text('🔧 Test Camera (Debug)'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white.withOpacity(0.7),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: AppTheme.spacingXxl),
 
                     // Footer with animation
                     StaggeredListAnimation(
-                      index: 4,
+                      index: 5,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppTheme.spacingL,
