@@ -62,9 +62,9 @@ class _PatientViewScreenState extends State<PatientViewScreen> {
         // Initialize camera controller
         _cameraController = CameraController(
           camera,
-          ResolutionPreset.medium,
+          ResolutionPreset.low, // Changed to low for better performance
           enableAudio: false,
-          imageFormatGroup: ImageFormatGroup.jpeg,
+          imageFormatGroup: ImageFormatGroup.yuv420, // YUV format required for ML Kit
         );
 
         await _cameraController!.initialize();
@@ -91,6 +91,8 @@ class _PatientViewScreenState extends State<PatientViewScreen> {
     }
   }
 
+  int _frameCount = 0;
+
   void _startPoseDetection() {
     if (_cameraController == null || !_cameraController!.value.isInitialized) {
       return;
@@ -103,10 +105,11 @@ class _PatientViewScreenState extends State<PatientViewScreen> {
     _cameraController!.startImageStream((CameraImage image) async {
       if (!_isPoseDetectionActive) return;
 
-      // Determine rotation based on device orientation
-      final rotation = InputImageRotation.rotation0deg;
+      // Process only every 3rd frame for better performance
+      _frameCount++;
+      if (_frameCount % 3 != 0) return;
 
-      final poses = await _poseDetector.detectPoses(image, rotation);
+      final poses = await _poseDetector.detectPoses(image);
 
       if (mounted && poses.isNotEmpty) {
         setState(() {
