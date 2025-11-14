@@ -37,7 +37,7 @@ class PoseDetectorService {
       // Create metadata with all plane information
       final InputImageMetadata metadata = InputImageMetadata(
         size: imageSize,
-        rotation: InputImageRotation.rotation90deg, // Portrait mode rotation
+        rotation: InputImageRotation.rotation0deg, // Don't rotate here, handle in painter
         format: InputImageFormat.nv21,
         bytesPerRow: cameraImage.planes[0].bytesPerRow,
       );

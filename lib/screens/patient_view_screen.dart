@@ -201,11 +201,11 @@ class _PatientViewScreenState extends State<PatientViewScreen> {
                 painter: PosePainter(
                   poses: _detectedPoses,
                   imageSize: Size(
-                    _cameraController!.value.previewSize!.width,  // Width first!
-                    _cameraController!.value.previewSize!.height, // Height second!
+                    _cameraController!.value.previewSize!.width,
+                    _cameraController!.value.previewSize!.height,
                   ),
-                  rotation: InputImageRotation.rotation90deg, // Correct rotation for portrait mode
-                  isFrontCamera: true, // Mirror horizontally for front camera
+                  rotation: InputImageRotation.rotation0deg, // Rotation handled in painter
+                  isFrontCamera: true, // Mirror for front camera selfie mode
                 ),
               ),
 
