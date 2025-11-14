@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import '../providers/session_provider.dart';
 import '../utils/exercise_validation.dart';
+import '../services/pose_detector_service.dart';
+import '../utils/pose_painter.dart';
+import '../utils/rep_counter.dart';
 
 class PatientViewScreen extends StatefulWidget {
   const PatientViewScreen({super.key});
@@ -18,6 +22,13 @@ class _PatientViewScreenState extends State<PatientViewScreen> {
   bool _isCameraInitialized = false;
   bool _isCameraPermissionGranted = false;
   String? _cameraError;
+
+  // Pose detection
+  final PoseDetectorService _poseDetector = PoseDetectorService();
+  final RepCounter _repCounter = RepCounter();
+  List<Pose> _detectedPoses = [];
+  bool _isPoseDetectionActive = false;
+  double _accuracy = 0.0;
 
   @override
   void initState() {
@@ -62,6 +73,9 @@ class _PatientViewScreenState extends State<PatientViewScreen> {
           setState(() {
             _isCameraInitialized = true;
           });
+
+          // Start pose detection
+          _startPoseDetection();
         }
       } catch (e) {
         setState(() {
@@ -77,9 +91,50 @@ class _PatientViewScreenState extends State<PatientViewScreen> {
     }
   }
 
+  void _startPoseDetection() {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      return;
+    }
+
+    setState(() {
+      _isPoseDetectionActive = true;
+    });
+
+    _cameraController!.startImageStream((CameraImage image) async {
+      if (!_isPoseDetectionActive) return;
+
+      // Determine rotation based on device orientation
+      final rotation = InputImageRotation.rotation0deg;
+
+      final poses = await _poseDetector.detectPoses(image, rotation);
+
+      if (mounted && poses.isNotEmpty) {
+        setState(() {
+          _detectedPoses = poses;
+
+          // Process first pose for rep counting
+          final pose = poses.first;
+          _repCounter.processPose(pose);
+          _accuracy = _repCounter.getAccuracy(pose);
+        });
+      }
+    });
+  }
+
+  void _stopPoseDetection() {
+    setState(() {
+      _isPoseDetectionActive = false;
+      _detectedPoses = [];
+    });
+
+    _cameraController?.stopImageStream();
+  }
+
   @override
   void dispose() {
+    _stopPoseDetection();
     _cameraController?.dispose();
+    _poseDetector.dispose();
     super.dispose();
   }
 
@@ -126,12 +181,73 @@ class _PatientViewScreenState extends State<PatientViewScreen> {
       );
     }
 
-    // Camera preview with aspect ratio
+    // Camera preview with skeleton overlay
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: AspectRatio(
         aspectRatio: _cameraController!.value.aspectRatio,
-        child: CameraPreview(_cameraController!),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Camera preview
+            CameraPreview(_cameraController!),
+
+            // Pose skeleton overlay
+            if (_detectedPoses.isNotEmpty)
+              CustomPaint(
+                painter: PosePainter(
+                  poses: _detectedPoses,
+                  imageSize: Size(
+                    _cameraController!.value.previewSize!.height,
+                    _cameraController!.value.previewSize!.width,
+                  ),
+                  rotation: InputImageRotation.rotation0deg,
+                ),
+              ),
+
+            // Accuracy indicator (top-left)
+            Positioned(
+              top: 16,
+              left: 16,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.6),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'Accuracy: ${_accuracy.toStringAsFixed(0)}%',
+                  style: TextStyle(
+                    color: _accuracy > 70 ? Colors.green : Colors.orange,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+
+            // Rep counter (top-right)
+            Positioned(
+              top: 16,
+              right: 16,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.6),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'Reps: ${_repCounter.repCount}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -295,9 +411,15 @@ class _PatientViewScreenState extends State<PatientViewScreen> {
                               final newValue = !provider.isVideoEnabled;
                               provider.setIsVideoEnabled(newValue);
 
-                              // Start or stop camera based on toggle
-                              if (newValue && !_isCameraInitialized) {
-                                await _initializeCamera();
+                              // Start or stop camera and pose detection based on toggle
+                              if (newValue) {
+                                if (!_isCameraInitialized) {
+                                  await _initializeCamera();
+                                } else if (!_isPoseDetectionActive) {
+                                  _startPoseDetection();
+                                }
+                              } else {
+                                _stopPoseDetection();
                               }
                             },
                             icon: Icon(
