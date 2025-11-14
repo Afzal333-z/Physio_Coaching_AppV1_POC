@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 
@@ -25,33 +26,16 @@ class PoseDetectorService {
       }
       final bytes = allBytes.done().buffer.asUint8List();
 
-      final Size imageSize = Size(
-        image.width.toDouble(),
-        image.height.toDouble(),
-      );
-
-      final InputImageFormat format = _formatFromPlatform(image.format.raw);
-
-      final planeData = image.planes.map(
-        (Plane plane) {
-          return InputImagePlaneMetadata(
-            bytesPerRow: plane.bytesPerRow,
-            height: plane.height,
-            width: plane.width,
-          );
-        },
-      ).toList();
-
-      final inputImageData = InputImageData(
-        size: imageSize,
-        imageRotation: rotation,
-        inputImageFormat: format,
-        planeData: planeData,
+      final InputImageMetadata metadata = InputImageMetadata(
+        size: Size(image.width.toDouble(), image.height.toDouble()),
+        rotation: rotation,
+        format: InputImageFormat.yuv420,
+        bytesPerRow: image.planes[0].bytesPerRow,
       );
 
       final inputImage = InputImage.fromBytes(
         bytes: bytes,
-        inputImageData: inputImageData,
+        metadata: metadata,
       );
 
       final poses = await _poseDetector.processImage(inputImage);
@@ -64,18 +48,7 @@ class PoseDetectorService {
     }
   }
 
-  InputImageFormat _formatFromPlatform(int format) {
-    // Android formats
-    if (format == 35) return InputImageFormat.yuv420; // YUV_420_888
-    if (format == 17) return InputImageFormat.nv21; // NV21
-
-    return InputImageFormat.yuv420;
-  }
-
   void dispose() {
     _poseDetector.close();
   }
 }
-
-// Import for WriteBuffer
-import 'dart:typed_data';

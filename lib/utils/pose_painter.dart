@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 
@@ -157,9 +158,9 @@ class PosePainter extends CustomPainter {
 double calculateAngle(PoseLandmark? a, PoseLandmark? b, PoseLandmark? c) {
   if (a == null || b == null || c == null) return 0.0;
 
-  final double radians = Math.atan2(c.y - b.y, c.x - b.x) -
-      Math.atan2(a.y - b.y, a.x - b.x);
-  double angle = radians.abs() * 180.0 / Math.pi;
+  final double radians = math.atan2(c.y - b.y, c.x - b.x) -
+      math.atan2(a.y - b.y, a.x - b.x);
+  double angle = radians.abs() * 180.0 / math.pi;
 
   if (angle > 180.0) {
     angle = 360.0 - angle;
@@ -167,6 +168,3 @@ double calculateAngle(PoseLandmark? a, PoseLandmark? b, PoseLandmark? c) {
 
   return angle;
 }
-
-// Import dart:math
-import 'dart:math' as Math;
