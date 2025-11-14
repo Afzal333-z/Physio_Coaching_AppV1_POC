@@ -7,11 +7,13 @@ class PosePainter extends CustomPainter {
   final List<Pose> poses;
   final Size imageSize;
   final InputImageRotation rotation;
+  final bool isFrontCamera;
 
   PosePainter({
     required this.poses,
     required this.imageSize,
     required this.rotation,
+    this.isFrontCamera = false,
   });
 
   @override
@@ -141,11 +143,27 @@ class PosePainter extends CustomPainter {
   }
 
   Offset _translatePoint(double x, double y, Size size) {
-    // Scale the coordinates from image size to canvas size
-    final double scaleX = size.width / imageSize.width;
-    final double scaleY = size.height / imageSize.height;
+    double translateX = x;
+    double translateY = y;
 
-    return Offset(x * scaleX, y * scaleY);
+    // Handle rotation (for portrait mode phones)
+    if (rotation == InputImageRotation.rotation90deg ||
+        rotation == InputImageRotation.rotation270deg) {
+      // Swap coordinates for 90/270 degree rotation
+      translateX = y;
+      translateY = imageSize.width - x;
+    }
+
+    // Mirror horizontally for front-facing camera
+    if (isFrontCamera) {
+      translateX = imageSize.height - translateX;
+    }
+
+    // Scale the coordinates from image size to canvas size
+    final double scaleX = size.width / imageSize.height;
+    final double scaleY = size.height / imageSize.width;
+
+    return Offset(translateX * scaleX, translateY * scaleY);
   }
 
   @override
