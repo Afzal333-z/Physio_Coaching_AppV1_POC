@@ -146,9 +146,10 @@ class PosePainter extends CustomPainter {
     // For portrait mode on phones, we need to rotate coordinates 90 degrees
     // The camera captures in landscape, but phone is held in portrait
 
-    // Rotate 90 degrees clockwise: (x, y) -> (imageHeight - y, x)
-    double rotatedX = imageSize.height - y;
-    double rotatedY = x;
+    // Rotate 90 degrees counter-clockwise and flip to get correct orientation
+    // (x, y) -> (y, imageWidth - x)
+    double rotatedX = y;
+    double rotatedY = imageSize.width - x;
 
     // Mirror horizontally for front-facing camera (selfie mode)
     if (isFrontCamera) {
