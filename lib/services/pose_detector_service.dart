@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 
@@ -20,14 +21,30 @@ class PoseDetectorService {
     _isProcessing = true;
 
     try {
+      // Combine all YUV planes properly
+      final WriteBuffer allBytes = WriteBuffer();
+      for (final Plane plane in cameraImage.planes) {
+        allBytes.putUint8List(plane.bytes);
+      }
+      final bytes = allBytes.done().buffer.asUint8List();
+
+      // Get image size
+      final Size imageSize = Size(
+        cameraImage.width.toDouble(),
+        cameraImage.height.toDouble(),
+      );
+
+      // Create metadata with all plane information
+      final InputImageMetadata metadata = InputImageMetadata(
+        size: imageSize,
+        rotation: InputImageRotation.rotation0deg,
+        format: InputImageFormat.nv21,
+        bytesPerRow: cameraImage.planes[0].bytesPerRow,
+      );
+
       final inputImage = InputImage.fromBytes(
-        bytes: cameraImage.planes[0].bytes,
-        metadata: InputImageMetadata(
-          size: Size(cameraImage.width.toDouble(), cameraImage.height.toDouble()),
-          rotation: InputImageRotation.rotation0deg,
-          format: InputImageFormat.nv21, // Android default YUV format
-          bytesPerRow: cameraImage.planes[0].bytesPerRow,
-        ),
+        bytes: bytes,
+        metadata: metadata,
       );
 
       final poses = await _poseDetector.processImage(inputImage);
